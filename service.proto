@@ -4,15 +4,38 @@ package gaproxy;
 
 import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
 
+// GAProxy proxies simple queries against Google Analytics.
+//
+// It maintains its own (non-distributed) session store to provide a simple
+// example of private auth, where an initial call is made to exchange an Auth0
+// identity token for a GAProxy session. The session ID is then used in Query
+// calls to auth the query operation.
 service GAProxy {
 	rpc Login (LoginRequest) returns (LoginResponse) {
 		option (google.api.http) = {
-			post: "/login"
+			post: "/session/login"
 		};
 	}
+	rpc Logout (LogoutRequest) returns (LogoutResponse) {
+		option (google.api.http) = {
+			get: "/session/logout/{session_id}"
+		};
+	}
+	rpc CheckSession (CheckSessionRequest) returns (CheckSessionResponse) {
+		option (google.api.http) = {
+			get: "/session/check/{session_id}"
+		};
+	}
+
 	rpc Query (QueryRequest) returns (QueryResponse) {
 		option (google.api.http) = {
 			post: "/query-ga"
+		};
+	}
+
+	rpc Ping (PingRequest) returns (PingResponse) {
+		option (google.api.http) = {
+			get: "/ping"
 		};
 	}
 }
@@ -20,19 +43,48 @@ service GAProxy {
 message LoginRequest {
 	string identity = 1;
 }
-
 message LoginResponse {
 	string session_id = 1;
 	int64 expires_at = 2;
 }
 
-message QueryRequest {
-	string start_date = 1;
-	string end_date = 2;
-	repeated string metrics = 3;
-	repeated string dimensions = 4;
+message LogoutRequest {
+	string session_id = 1;
+}
+message LogoutResponse {
+	string session_id = 1;
 }
 
+message CheckSessionRequest {
+	string session_id = 1;
+}
+message CheckSessionResponse {
+	string session_id = 1;
+	bool is_valid = 2;
+	int64 expires_at = 3;
+}
+
+// GA query support is extremely basic.
+message QueryRequest {
+	string session_id = 1;
+	string start_date = 2;
+	string end_date = 3;
+	repeated string metrics = 4;
+	repeated string dimensions = 5;
+}
+
+// GA query results will be returned as an unprocessed JSON blob, exactly as
+// received from GA.
 message QueryResponse {
 	string query_results = 1;
 }
+
+message PingRequest {}
+message PingResponse {
+	enum Status {
+		OK = 1,
+		ERROR = 2,
+	}
+	Status status = 1;
+}
+

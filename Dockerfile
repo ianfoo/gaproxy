@@ -3,8 +3,7 @@
 FROM golang:1.12-alpine as module_base
 
 # Alpine requires some setup to be able to pull Go modules.
-RUN apk add bash ca-certificates git
-# gcc g++ libc-dev
+RUN apk add ca-certificates git
 
 ENV GO111MODULE=on
 WORKDIR /go/src/gaproxy
@@ -16,7 +15,6 @@ RUN go mod download
 
 # Builder
 FROM module_base AS builder
-ENV GO111MODULE=on
 COPY . .
 RUN go build -o /go/bin/gaproxy ./cmd/gaproxy-server
 
