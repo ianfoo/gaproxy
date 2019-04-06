@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package gaproxy;
+
+import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
+
+service GAProxy {
+	rpc Login (LoginRequest) returns (LoginResponse) {
+		option (google.api.http) = {
+			post: "/login"
+		};
+	}
+	rpc Query (QueryRequest) returns (QueryResponse) {
+		option (google.api.http) = {
+			post: "/query-ga"
+		};
+	}
+}
+
+message LoginRequest {
+	string identity = 1;
+}
+
+message LoginResponse {
+	string session_id = 1;
+	int64 expires_at = 2;
+}
+
+message QueryRequest {
+	string start_date = 1;
+	string end_date = 2;
+	repeated string metrics = 3;
+	repeated string dimensions = 4;
+}
+
+message QueryResponse {
+	string query_results = 1;
+}
