@@ -34,10 +34,28 @@ func MakeGRPCServer(endpoints Endpoints) pb.GAProxyServer {
 			EncodeGRPCLoginResponse,
 			serverOptions...,
 		),
+		logout: grpctransport.NewServer(
+			endpoints.LogoutEndpoint,
+			DecodeGRPCLogoutRequest,
+			EncodeGRPCLogoutResponse,
+			serverOptions...,
+		),
+		checksession: grpctransport.NewServer(
+			endpoints.CheckSessionEndpoint,
+			DecodeGRPCCheckSessionRequest,
+			EncodeGRPCCheckSessionResponse,
+			serverOptions...,
+		),
 		query: grpctransport.NewServer(
 			endpoints.QueryEndpoint,
 			DecodeGRPCQueryRequest,
 			EncodeGRPCQueryResponse,
+			serverOptions...,
+		),
+		ping: grpctransport.NewServer(
+			endpoints.PingEndpoint,
+			DecodeGRPCPingRequest,
+			EncodeGRPCPingResponse,
 			serverOptions...,
 		),
 	}
@@ -45,8 +63,11 @@ func MakeGRPCServer(endpoints Endpoints) pb.GAProxyServer {
 
 // grpcServer implements the GAProxyServer interface
 type grpcServer struct {
-	login grpctransport.Handler
-	query grpctransport.Handler
+	login        grpctransport.Handler
+	logout       grpctransport.Handler
+	checksession grpctransport.Handler
+	query        grpctransport.Handler
+	ping         grpctransport.Handler
 }
 
 // Methods for grpcServer to implement GAProxyServer interface
@@ -59,12 +80,36 @@ func (s *grpcServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Login
 	return rep.(*pb.LoginResponse), nil
 }
 
+func (s *grpcServer) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
+	_, rep, err := s.logout.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.LogoutResponse), nil
+}
+
+func (s *grpcServer) CheckSession(ctx context.Context, req *pb.CheckSessionRequest) (*pb.CheckSessionResponse, error) {
+	_, rep, err := s.checksession.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.CheckSessionResponse), nil
+}
+
 func (s *grpcServer) Query(ctx context.Context, req *pb.QueryRequest) (*pb.QueryResponse, error) {
 	_, rep, err := s.query.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	return rep.(*pb.QueryResponse), nil
+}
+
+func (s *grpcServer) Ping(ctx context.Context, req *pb.PingRequest) (*pb.PingResponse, error) {
+	_, rep, err := s.ping.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.PingResponse), nil
 }
 
 // Server Decode
@@ -76,10 +121,31 @@ func DecodeGRPCLoginRequest(_ context.Context, grpcReq interface{}) (interface{}
 	return req, nil
 }
 
+// DecodeGRPCLogoutRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC logout request to a user-domain logout request. Primarily useful in a server.
+func DecodeGRPCLogoutRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.LogoutRequest)
+	return req, nil
+}
+
+// DecodeGRPCCheckSessionRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC checksession request to a user-domain checksession request. Primarily useful in a server.
+func DecodeGRPCCheckSessionRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.CheckSessionRequest)
+	return req, nil
+}
+
 // DecodeGRPCQueryRequest is a transport/grpc.DecodeRequestFunc that converts a
 // gRPC query request to a user-domain query request. Primarily useful in a server.
 func DecodeGRPCQueryRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.QueryRequest)
+	return req, nil
+}
+
+// DecodeGRPCPingRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC ping request to a user-domain ping request. Primarily useful in a server.
+func DecodeGRPCPingRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.PingRequest)
 	return req, nil
 }
 
@@ -92,10 +158,31 @@ func EncodeGRPCLoginResponse(_ context.Context, response interface{}) (interface
 	return resp, nil
 }
 
+// EncodeGRPCLogoutResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain logout response to a gRPC logout reply. Primarily useful in a server.
+func EncodeGRPCLogoutResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.LogoutResponse)
+	return resp, nil
+}
+
+// EncodeGRPCCheckSessionResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain checksession response to a gRPC checksession reply. Primarily useful in a server.
+func EncodeGRPCCheckSessionResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.CheckSessionResponse)
+	return resp, nil
+}
+
 // EncodeGRPCQueryResponse is a transport/grpc.EncodeResponseFunc that converts a
 // user-domain query response to a gRPC query reply. Primarily useful in a server.
 func EncodeGRPCQueryResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*pb.QueryResponse)
+	return resp, nil
+}
+
+// EncodeGRPCPingResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain ping response to a gRPC ping reply. Primarily useful in a server.
+func EncodeGRPCPingResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.PingResponse)
 	return resp, nil
 }
 

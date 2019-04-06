@@ -24,6 +24,31 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
+type PingResponse_Status int32
+
+const (
+	PingResponse_ERROR PingResponse_Status = 0
+	PingResponse_OK    PingResponse_Status = 1
+)
+
+var PingResponse_Status_name = map[int32]string{
+	0: "ERROR",
+	1: "OK",
+}
+
+var PingResponse_Status_value = map[string]int32{
+	"ERROR": 0,
+	"OK":    1,
+}
+
+func (x PingResponse_Status) String() string {
+	return proto.EnumName(PingResponse_Status_name, int32(x))
+}
+
+func (PingResponse_Status) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{9, 0}
+}
+
 type LoginRequest struct {
 	Identity string `protobuf:"bytes,1,opt,name=identity,proto3" json:"identity,omitempty"`
 }
@@ -120,18 +145,212 @@ func (m *LoginResponse) GetExpiresAt() int64 {
 	return 0
 }
 
+type LogoutRequest struct {
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+}
+
+func (m *LogoutRequest) Reset()         { *m = LogoutRequest{} }
+func (m *LogoutRequest) String() string { return proto.CompactTextString(m) }
+func (*LogoutRequest) ProtoMessage()    {}
+func (*LogoutRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{2}
+}
+func (m *LogoutRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *LogoutRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_LogoutRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *LogoutRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LogoutRequest.Merge(m, src)
+}
+func (m *LogoutRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *LogoutRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_LogoutRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LogoutRequest proto.InternalMessageInfo
+
+func (m *LogoutRequest) GetSessionId() string {
+	if m != nil {
+		return m.SessionId
+	}
+	return ""
+}
+
+type LogoutResponse struct {
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+}
+
+func (m *LogoutResponse) Reset()         { *m = LogoutResponse{} }
+func (m *LogoutResponse) String() string { return proto.CompactTextString(m) }
+func (*LogoutResponse) ProtoMessage()    {}
+func (*LogoutResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{3}
+}
+func (m *LogoutResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *LogoutResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_LogoutResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *LogoutResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LogoutResponse.Merge(m, src)
+}
+func (m *LogoutResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *LogoutResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_LogoutResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LogoutResponse proto.InternalMessageInfo
+
+func (m *LogoutResponse) GetSessionId() string {
+	if m != nil {
+		return m.SessionId
+	}
+	return ""
+}
+
+type CheckSessionRequest struct {
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+}
+
+func (m *CheckSessionRequest) Reset()         { *m = CheckSessionRequest{} }
+func (m *CheckSessionRequest) String() string { return proto.CompactTextString(m) }
+func (*CheckSessionRequest) ProtoMessage()    {}
+func (*CheckSessionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{4}
+}
+func (m *CheckSessionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CheckSessionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CheckSessionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CheckSessionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CheckSessionRequest.Merge(m, src)
+}
+func (m *CheckSessionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *CheckSessionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CheckSessionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CheckSessionRequest proto.InternalMessageInfo
+
+func (m *CheckSessionRequest) GetSessionId() string {
+	if m != nil {
+		return m.SessionId
+	}
+	return ""
+}
+
+type CheckSessionResponse struct {
+	SessionId string `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	IsValid   bool   `protobuf:"varint,2,opt,name=is_valid,json=isValid,proto3" json:"is_valid,omitempty"`
+	ExpiresAt int64  `protobuf:"varint,3,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+}
+
+func (m *CheckSessionResponse) Reset()         { *m = CheckSessionResponse{} }
+func (m *CheckSessionResponse) String() string { return proto.CompactTextString(m) }
+func (*CheckSessionResponse) ProtoMessage()    {}
+func (*CheckSessionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{5}
+}
+func (m *CheckSessionResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CheckSessionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CheckSessionResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CheckSessionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CheckSessionResponse.Merge(m, src)
+}
+func (m *CheckSessionResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *CheckSessionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_CheckSessionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CheckSessionResponse proto.InternalMessageInfo
+
+func (m *CheckSessionResponse) GetSessionId() string {
+	if m != nil {
+		return m.SessionId
+	}
+	return ""
+}
+
+func (m *CheckSessionResponse) GetIsValid() bool {
+	if m != nil {
+		return m.IsValid
+	}
+	return false
+}
+
+func (m *CheckSessionResponse) GetExpiresAt() int64 {
+	if m != nil {
+		return m.ExpiresAt
+	}
+	return 0
+}
+
+// GA query support is extremely basic.
 type QueryRequest struct {
-	StartDate  string   `protobuf:"bytes,1,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
-	EndDate    string   `protobuf:"bytes,2,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
-	Metrics    []string `protobuf:"bytes,3,rep,name=metrics,proto3" json:"metrics,omitempty"`
-	Dimensions []string `protobuf:"bytes,4,rep,name=dimensions,proto3" json:"dimensions,omitempty"`
+	SessionId  string   `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	StartDate  string   `protobuf:"bytes,2,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
+	EndDate    string   `protobuf:"bytes,3,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
+	Metrics    []string `protobuf:"bytes,4,rep,name=metrics,proto3" json:"metrics,omitempty"`
+	Dimensions []string `protobuf:"bytes,5,rep,name=dimensions,proto3" json:"dimensions,omitempty"`
 }
 
 func (m *QueryRequest) Reset()         { *m = QueryRequest{} }
 func (m *QueryRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryRequest) ProtoMessage()    {}
 func (*QueryRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a0b84a42fa06f626, []int{2}
+	return fileDescriptor_a0b84a42fa06f626, []int{6}
 }
 func (m *QueryRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -159,6 +378,13 @@ func (m *QueryRequest) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_QueryRequest proto.InternalMessageInfo
+
+func (m *QueryRequest) GetSessionId() string {
+	if m != nil {
+		return m.SessionId
+	}
+	return ""
+}
 
 func (m *QueryRequest) GetStartDate() string {
 	if m != nil {
@@ -188,6 +414,8 @@ func (m *QueryRequest) GetDimensions() []string {
 	return nil
 }
 
+// GA query results will be returned as an unprocessed JSON blob, exactly as
+// received from GA.
 type QueryResponse struct {
 	QueryResults string `protobuf:"bytes,1,opt,name=query_results,json=queryResults,proto3" json:"query_results,omitempty"`
 }
@@ -196,7 +424,7 @@ func (m *QueryResponse) Reset()         { *m = QueryResponse{} }
 func (m *QueryResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryResponse) ProtoMessage()    {}
 func (*QueryResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a0b84a42fa06f626, []int{3}
+	return fileDescriptor_a0b84a42fa06f626, []int{7}
 }
 func (m *QueryResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -232,43 +460,143 @@ func (m *QueryResponse) GetQueryResults() string {
 	return ""
 }
 
+type PingRequest struct {
+}
+
+func (m *PingRequest) Reset()         { *m = PingRequest{} }
+func (m *PingRequest) String() string { return proto.CompactTextString(m) }
+func (*PingRequest) ProtoMessage()    {}
+func (*PingRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{8}
+}
+func (m *PingRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PingRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PingRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *PingRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PingRequest.Merge(m, src)
+}
+func (m *PingRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *PingRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_PingRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PingRequest proto.InternalMessageInfo
+
+type PingResponse struct {
+	Status PingResponse_Status `protobuf:"varint,1,opt,name=status,proto3,enum=gaproxy.PingResponse_Status" json:"status,omitempty"`
+}
+
+func (m *PingResponse) Reset()         { *m = PingResponse{} }
+func (m *PingResponse) String() string { return proto.CompactTextString(m) }
+func (*PingResponse) ProtoMessage()    {}
+func (*PingResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0b84a42fa06f626, []int{9}
+}
+func (m *PingResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PingResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PingResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *PingResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PingResponse.Merge(m, src)
+}
+func (m *PingResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *PingResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_PingResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PingResponse proto.InternalMessageInfo
+
+func (m *PingResponse) GetStatus() PingResponse_Status {
+	if m != nil {
+		return m.Status
+	}
+	return PingResponse_ERROR
+}
+
 func init() {
+	proto.RegisterEnum("gaproxy.PingResponse_Status", PingResponse_Status_name, PingResponse_Status_value)
 	proto.RegisterType((*LoginRequest)(nil), "gaproxy.LoginRequest")
 	proto.RegisterType((*LoginResponse)(nil), "gaproxy.LoginResponse")
+	proto.RegisterType((*LogoutRequest)(nil), "gaproxy.LogoutRequest")
+	proto.RegisterType((*LogoutResponse)(nil), "gaproxy.LogoutResponse")
+	proto.RegisterType((*CheckSessionRequest)(nil), "gaproxy.CheckSessionRequest")
+	proto.RegisterType((*CheckSessionResponse)(nil), "gaproxy.CheckSessionResponse")
 	proto.RegisterType((*QueryRequest)(nil), "gaproxy.QueryRequest")
 	proto.RegisterType((*QueryResponse)(nil), "gaproxy.QueryResponse")
+	proto.RegisterType((*PingRequest)(nil), "gaproxy.PingRequest")
+	proto.RegisterType((*PingResponse)(nil), "gaproxy.PingResponse")
 }
 
 func init() { proto.RegisterFile("service.proto", fileDescriptor_a0b84a42fa06f626) }
 
 var fileDescriptor_a0b84a42fa06f626 = []byte{
-	// 401 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x5c, 0x91, 0xcf, 0x8a, 0x13, 0x41,
-	0x10, 0xc6, 0xd3, 0x89, 0xbb, 0x49, 0xca, 0x44, 0x70, 0x40, 0x19, 0x03, 0x0e, 0xa1, 0xbd, 0x2c,
-	0x82, 0x19, 0x50, 0x5f, 0x60, 0xc5, 0x3f, 0x2c, 0x28, 0x68, 0x5e, 0x20, 0xf4, 0xa6, 0xcb, 0xd9,
-	0x86, 0xa4, 0x7b, 0xd2, 0x55, 0xb3, 0x6c, 0xae, 0xfb, 0x04, 0x82, 0x57, 0x1f, 0xc8, 0xe3, 0x82,
-	0x17, 0x8f, 0x92, 0xf8, 0x20, 0xd2, 0x9d, 0x76, 0x19, 0x3d, 0xd6, 0xef, 0xab, 0xfe, 0xea, 0xeb,
-	0x2a, 0x18, 0x13, 0xfa, 0x4b, 0xb3, 0xc4, 0x59, 0xed, 0x1d, 0xbb, 0xac, 0x5f, 0xa9, 0xda, 0xbb,
-	0xab, 0xed, 0xe4, 0x4d, 0x65, 0xf8, 0xa2, 0x39, 0x9f, 0x2d, 0xdd, 0xba, 0x5c, 0x23, 0xab, 0x4b,
-	0xf4, 0x84, 0x25, 0xfb, 0x86, 0xa8, 0xd4, 0xf8, 0x99, 0x3d, 0x62, 0x59, 0x39, 0x57, 0xad, 0x90,
-	0x2f, 0x8c, 0xd7, 0xb5, 0xf2, 0xbc, 0x2d, 0x95, 0xb5, 0x8e, 0x15, 0x1b, 0x67, 0xe9, 0xe0, 0x27,
-	0x9f, 0xc2, 0xe8, 0xbd, 0xab, 0x8c, 0x9d, 0xe3, 0xa6, 0x41, 0xe2, 0x6c, 0x02, 0x03, 0xa3, 0xd1,
-	0xb2, 0xe1, 0x6d, 0x2e, 0xa6, 0xe2, 0x64, 0x38, 0xbf, 0xad, 0xe5, 0x07, 0x18, 0xa7, 0x5e, 0xaa,
-	0x9d, 0x25, 0xcc, 0x1e, 0x03, 0x10, 0x12, 0x19, 0x67, 0x17, 0x46, 0xa7, 0xf6, 0x61, 0x22, 0x67,
-	0x3a, 0xc8, 0x78, 0x55, 0x1b, 0x8f, 0xb4, 0x50, 0x9c, 0x77, 0xa7, 0xe2, 0xa4, 0x37, 0x1f, 0x26,
-	0x72, 0xca, 0xf2, 0x5a, 0xc0, 0xe8, 0x53, 0x83, 0x7e, 0xfb, 0x77, 0x76, 0xb0, 0x63, 0xe5, 0x79,
-	0xa1, 0x15, 0xe3, 0xad, 0x5d, 0x20, 0xaf, 0x15, 0x63, 0xf6, 0x08, 0x06, 0x68, 0xf5, 0x41, 0xec,
-	0x46, 0xb1, 0x8f, 0x56, 0x47, 0x29, 0x87, 0xfe, 0x1a, 0xd9, 0x9b, 0x25, 0xe5, 0xbd, 0x69, 0x2f,
-	0x28, 0xa9, 0xcc, 0x0a, 0x00, 0x6d, 0xd6, 0x68, 0x43, 0x24, 0xca, 0xef, 0x44, 0xb1, 0x45, 0xe4,
-	0x4b, 0x18, 0xa7, 0x0c, 0xe9, 0x4f, 0x4f, 0x60, 0xbc, 0x09, 0x60, 0xe1, 0x91, 0x9a, 0x15, 0x53,
-	0xca, 0x31, 0xda, 0xa4, 0xae, 0xc0, 0x9e, 0x7f, 0x13, 0xd0, 0x7f, 0x77, 0xfa, 0x31, 0x1c, 0x22,
-	0x7b, 0x0b, 0x47, 0x71, 0x2b, 0xd9, 0x83, 0x59, 0xba, 0xcd, 0xac, 0xbd, 0xd1, 0xc9, 0xc3, 0xff,
-	0xf1, 0x61, 0x90, 0xbc, 0x77, 0xfd, 0xe3, 0xf7, 0xd7, 0xee, 0x40, 0x1e, 0x97, 0xab, 0xf8, 0xfc,
-	0x0c, 0x8e, 0x62, 0x92, 0x96, 0x4f, 0x7b, 0x3b, 0x2d, 0x9f, 0x7f, 0x02, 0xcb, 0xfb, 0xd1, 0xe7,
-	0xae, 0x1c, 0x96, 0x31, 0xe2, 0xb3, 0x4a, 0xbd, 0xca, 0xbf, 0xef, 0x0a, 0x71, 0xb3, 0x2b, 0xc4,
-	0xaf, 0x5d, 0x21, 0xbe, 0xec, 0x8b, 0xce, 0xcd, 0xbe, 0xe8, 0xfc, 0xdc, 0x17, 0x9d, 0xf3, 0xe3,
-	0x78, 0xf5, 0x17, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x85, 0xc7, 0x19, 0x61, 0x56, 0x02, 0x00,
-	0x00,
+	// 616 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xdf, 0x4e, 0x13, 0x4f,
+	0x18, 0xed, 0x52, 0xda, 0xd2, 0x8f, 0x96, 0xf0, 0x9b, 0x1f, 0x60, 0x2d, 0xb0, 0x21, 0x83, 0x17,
+	0xc4, 0xc4, 0x6e, 0x82, 0xbc, 0x00, 0x28, 0x31, 0xc4, 0x3f, 0xe0, 0x92, 0x78, 0xdb, 0x0c, 0xdd,
+	0xcf, 0x65, 0x62, 0xbb, 0xb3, 0xcc, 0xcc, 0x12, 0x1a, 0xe3, 0x8d, 0x4f, 0x60, 0xe2, 0x13, 0xf8,
+	0x1c, 0xbe, 0x80, 0x97, 0x24, 0xde, 0x78, 0x69, 0xc0, 0x07, 0x31, 0x33, 0x3b, 0xd0, 0x6d, 0x45,
+	0xd3, 0xcb, 0x39, 0xe7, 0xec, 0x39, 0x33, 0xdf, 0x77, 0xb2, 0xd0, 0x54, 0x28, 0xcf, 0x79, 0x0f,
+	0x3b, 0xa9, 0x14, 0x5a, 0x90, 0x5a, 0xcc, 0x52, 0x29, 0x2e, 0x86, 0xed, 0xfd, 0x98, 0xeb, 0xd3,
+	0xec, 0xa4, 0xd3, 0x13, 0x83, 0x60, 0x80, 0x9a, 0x9d, 0xa3, 0x54, 0x18, 0x68, 0x99, 0x29, 0x15,
+	0x44, 0xf8, 0x56, 0x4b, 0xc4, 0x20, 0x16, 0x22, 0xee, 0xa3, 0x3e, 0xe5, 0x32, 0x4a, 0x99, 0xd4,
+	0xc3, 0x80, 0x25, 0x89, 0xd0, 0x4c, 0x73, 0x91, 0xa8, 0xdc, 0x8f, 0x3e, 0x84, 0xc6, 0x0b, 0x11,
+	0xf3, 0x24, 0xc4, 0xb3, 0x0c, 0x95, 0x26, 0x6d, 0x98, 0xe3, 0x11, 0x26, 0x9a, 0xeb, 0x61, 0xcb,
+	0xdb, 0xf0, 0xb6, 0xea, 0xe1, 0xed, 0x99, 0xbe, 0x84, 0xa6, 0xd3, 0xaa, 0x54, 0x24, 0x0a, 0xc9,
+	0x3a, 0x80, 0x42, 0xa5, 0xb8, 0x48, 0xba, 0x3c, 0x72, 0xf2, 0xba, 0x43, 0x0e, 0x22, 0x43, 0xe3,
+	0x45, 0xca, 0x25, 0xaa, 0x2e, 0xd3, 0xad, 0x99, 0x0d, 0x6f, 0xab, 0x1c, 0xd6, 0x1d, 0xb2, 0xab,
+	0x69, 0xc7, 0xda, 0x89, 0x4c, 0xdf, 0x64, 0xff, 0xdb, 0x8e, 0x06, 0xb0, 0x70, 0xa3, 0x9f, 0x2a,
+	0x9f, 0xee, 0xc0, 0xff, 0x4f, 0x4e, 0xb1, 0xf7, 0xee, 0x38, 0x47, 0xa6, 0x8c, 0x11, 0xb0, 0x34,
+	0xfe, 0xd5, 0x74, 0x8f, 0xbd, 0x0f, 0x73, 0x5c, 0x75, 0xcf, 0x59, 0x9f, 0x47, 0xf6, 0xa9, 0x73,
+	0x61, 0x8d, 0xab, 0x37, 0xe6, 0x38, 0x31, 0x87, 0xf2, 0xe4, 0x1c, 0xbe, 0x78, 0xd0, 0x78, 0x9d,
+	0xa1, 0x1c, 0x4e, 0x77, 0x41, 0x4b, 0x6b, 0x26, 0x75, 0x37, 0x62, 0x1a, 0x6d, 0x96, 0xa1, 0x0d,
+	0xf2, 0x94, 0x69, 0x34, 0x17, 0xc1, 0x24, 0xca, 0xc9, 0xb2, 0x25, 0x6b, 0x98, 0x44, 0x96, 0x6a,
+	0x41, 0x6d, 0x80, 0x5a, 0xf2, 0x9e, 0x6a, 0xcd, 0x6e, 0x94, 0x0d, 0xe3, 0x8e, 0xc4, 0x07, 0x88,
+	0xf8, 0x00, 0x13, 0x13, 0xa1, 0x5a, 0x15, 0x4b, 0x16, 0x10, 0xba, 0x03, 0x4d, 0x77, 0x45, 0x37,
+	0x8d, 0x4d, 0x68, 0x9e, 0x19, 0xa0, 0x2b, 0x51, 0x65, 0x7d, 0xad, 0xdc, 0x35, 0x1b, 0x67, 0x4e,
+	0x65, 0x30, 0xda, 0x84, 0xf9, 0x23, 0x9e, 0xc4, 0xee, 0x5d, 0x94, 0x41, 0x23, 0x3f, 0x3a, 0x8f,
+	0x1d, 0xa8, 0x2a, 0xcd, 0x74, 0x96, 0x7f, 0xbc, 0xb0, 0xbd, 0xd6, 0x71, 0xe5, 0xee, 0x14, 0x65,
+	0x9d, 0x63, 0xab, 0x09, 0x9d, 0x96, 0xae, 0x42, 0x35, 0x47, 0x48, 0x1d, 0x2a, 0xfb, 0x61, 0x78,
+	0x18, 0x2e, 0x96, 0x48, 0x15, 0x66, 0x0e, 0x9f, 0x2f, 0x7a, 0xdb, 0x5f, 0xcb, 0x50, 0x7b, 0xb6,
+	0x7b, 0x64, 0x4c, 0xc8, 0x2b, 0xa8, 0xd8, 0xba, 0x92, 0xe5, 0x5b, 0xdf, 0x62, 0xd5, 0xdb, 0x2b,
+	0x93, 0x70, 0x9e, 0x47, 0x57, 0x3e, 0x7e, 0xff, 0xf5, 0x79, 0x66, 0x91, 0x2e, 0x04, 0x6e, 0xe6,
+	0x41, 0xdf, 0xda, 0x74, 0xa1, 0x9a, 0xf7, 0x8f, 0x8c, 0x7d, 0x39, 0x2a, 0x70, 0xfb, 0xde, 0x1f,
+	0xb8, 0xb3, 0x7c, 0x60, 0x2d, 0x7d, 0xb2, 0x56, 0xb4, 0x14, 0x99, 0x0e, 0xde, 0x8f, 0x16, 0xfd,
+	0x81, 0xa4, 0xd0, 0x28, 0x36, 0x8f, 0x8c, 0xe6, 0x71, 0x47, 0x8d, 0xdb, 0xeb, 0x7f, 0x61, 0x5d,
+	0xe4, 0xa6, 0x8d, 0x5c, 0x27, 0xab, 0xb7, 0x91, 0x3d, 0x23, 0x1b, 0x4f, 0x3c, 0x80, 0x8a, 0x5d,
+	0x6b, 0x61, 0x44, 0xc5, 0x26, 0x16, 0x46, 0x34, 0xb6, 0x7d, 0xfa, 0x9f, 0x35, 0x9f, 0xa7, 0xf5,
+	0xc0, 0xee, 0xfb, 0x51, 0xcc, 0xc8, 0x1e, 0xcc, 0x9a, 0xad, 0x91, 0xa5, 0x89, 0x25, 0xe6, 0x46,
+	0xcb, 0x77, 0xae, 0x96, 0x36, 0xad, 0x4f, 0x8d, 0x54, 0x82, 0x94, 0x27, 0xf1, 0x5e, 0xeb, 0xdb,
+	0x95, 0xef, 0x5d, 0x5e, 0xf9, 0xde, 0xcf, 0x2b, 0xdf, 0xfb, 0x74, 0xed, 0x97, 0x2e, 0xaf, 0xfd,
+	0xd2, 0x8f, 0x6b, 0xbf, 0x74, 0x52, 0xb5, 0x7f, 0xab, 0xc7, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff,
+	0x39, 0x86, 0xa0, 0x85, 0x0e, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -284,7 +612,10 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type GAProxyClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
+	CheckSession(ctx context.Context, in *CheckSessionRequest, opts ...grpc.CallOption) (*CheckSessionResponse, error)
 	Query(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error)
+	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
 }
 
 type gAProxyClient struct {
@@ -304,6 +635,24 @@ func (c *gAProxyClient) Login(ctx context.Context, in *LoginRequest, opts ...grp
 	return out, nil
 }
 
+func (c *gAProxyClient) Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error) {
+	out := new(LogoutResponse)
+	err := c.cc.Invoke(ctx, "/gaproxy.GAProxy/Logout", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gAProxyClient) CheckSession(ctx context.Context, in *CheckSessionRequest, opts ...grpc.CallOption) (*CheckSessionResponse, error) {
+	out := new(CheckSessionResponse)
+	err := c.cc.Invoke(ctx, "/gaproxy.GAProxy/CheckSession", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *gAProxyClient) Query(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error) {
 	out := new(QueryResponse)
 	err := c.cc.Invoke(ctx, "/gaproxy.GAProxy/Query", in, out, opts...)
@@ -313,10 +662,22 @@ func (c *gAProxyClient) Query(ctx context.Context, in *QueryRequest, opts ...grp
 	return out, nil
 }
 
+func (c *gAProxyClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
+	out := new(PingResponse)
+	err := c.cc.Invoke(ctx, "/gaproxy.GAProxy/Ping", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GAProxyServer is the server API for GAProxy service.
 type GAProxyServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
+	CheckSession(context.Context, *CheckSessionRequest) (*CheckSessionResponse, error)
 	Query(context.Context, *QueryRequest) (*QueryResponse, error)
+	Ping(context.Context, *PingRequest) (*PingResponse, error)
 }
 
 func RegisterGAProxyServer(s *grpc.Server, srv GAProxyServer) {
@@ -341,6 +702,42 @@ func _GAProxy_Login_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GAProxy_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogoutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GAProxyServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gaproxy.GAProxy/Logout",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GAProxyServer).Logout(ctx, req.(*LogoutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GAProxy_CheckSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GAProxyServer).CheckSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gaproxy.GAProxy/CheckSession",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GAProxyServer).CheckSession(ctx, req.(*CheckSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _GAProxy_Query_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryRequest)
 	if err := dec(in); err != nil {
@@ -359,6 +756,24 @@ func _GAProxy_Query_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GAProxy_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GAProxyServer).Ping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gaproxy.GAProxy/Ping",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GAProxyServer).Ping(ctx, req.(*PingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _GAProxy_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "gaproxy.GAProxy",
 	HandlerType: (*GAProxyServer)(nil),
@@ -368,8 +783,20 @@ var _GAProxy_serviceDesc = grpc.ServiceDesc{
 			Handler:    _GAProxy_Login_Handler,
 		},
 		{
+			MethodName: "Logout",
+			Handler:    _GAProxy_Logout_Handler,
+		},
+		{
+			MethodName: "CheckSession",
+			Handler:    _GAProxy_CheckSession_Handler,
+		},
+		{
 			MethodName: "Query",
 			Handler:    _GAProxy_Query_Handler,
+		},
+		{
+			MethodName: "Ping",
+			Handler:    _GAProxy_Ping_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -429,6 +856,117 @@ func (m *LoginResponse) MarshalTo(dAtA []byte) (int, error) {
 	return i, nil
 }
 
+func (m *LogoutRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *LogoutRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.SessionId) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintService(dAtA, i, uint64(len(m.SessionId)))
+		i += copy(dAtA[i:], m.SessionId)
+	}
+	return i, nil
+}
+
+func (m *LogoutResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *LogoutResponse) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.SessionId) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintService(dAtA, i, uint64(len(m.SessionId)))
+		i += copy(dAtA[i:], m.SessionId)
+	}
+	return i, nil
+}
+
+func (m *CheckSessionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CheckSessionRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.SessionId) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintService(dAtA, i, uint64(len(m.SessionId)))
+		i += copy(dAtA[i:], m.SessionId)
+	}
+	return i, nil
+}
+
+func (m *CheckSessionResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CheckSessionResponse) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.SessionId) > 0 {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintService(dAtA, i, uint64(len(m.SessionId)))
+		i += copy(dAtA[i:], m.SessionId)
+	}
+	if m.IsValid {
+		dAtA[i] = 0x10
+		i++
+		if m.IsValid {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i++
+	}
+	if m.ExpiresAt != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintService(dAtA, i, uint64(m.ExpiresAt))
+	}
+	return i, nil
+}
+
 func (m *QueryRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -444,21 +982,27 @@ func (m *QueryRequest) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.StartDate) > 0 {
+	if len(m.SessionId) > 0 {
 		dAtA[i] = 0xa
+		i++
+		i = encodeVarintService(dAtA, i, uint64(len(m.SessionId)))
+		i += copy(dAtA[i:], m.SessionId)
+	}
+	if len(m.StartDate) > 0 {
+		dAtA[i] = 0x12
 		i++
 		i = encodeVarintService(dAtA, i, uint64(len(m.StartDate)))
 		i += copy(dAtA[i:], m.StartDate)
 	}
 	if len(m.EndDate) > 0 {
-		dAtA[i] = 0x12
+		dAtA[i] = 0x1a
 		i++
 		i = encodeVarintService(dAtA, i, uint64(len(m.EndDate)))
 		i += copy(dAtA[i:], m.EndDate)
 	}
 	if len(m.Metrics) > 0 {
 		for _, s := range m.Metrics {
-			dAtA[i] = 0x1a
+			dAtA[i] = 0x22
 			i++
 			l = len(s)
 			for l >= 1<<7 {
@@ -473,7 +1017,7 @@ func (m *QueryRequest) MarshalTo(dAtA []byte) (int, error) {
 	}
 	if len(m.Dimensions) > 0 {
 		for _, s := range m.Dimensions {
-			dAtA[i] = 0x22
+			dAtA[i] = 0x2a
 			i++
 			l = len(s)
 			for l >= 1<<7 {
@@ -509,6 +1053,47 @@ func (m *QueryResponse) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintService(dAtA, i, uint64(len(m.QueryResults)))
 		i += copy(dAtA[i:], m.QueryResults)
+	}
+	return i, nil
+}
+
+func (m *PingRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PingRequest) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	return i, nil
+}
+
+func (m *PingResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PingResponse) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Status != 0 {
+		dAtA[i] = 0x8
+		i++
+		i = encodeVarintService(dAtA, i, uint64(m.Status))
 	}
 	return i, nil
 }
@@ -551,12 +1136,74 @@ func (m *LoginResponse) Size() (n int) {
 	return n
 }
 
+func (m *LogoutRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SessionId)
+	if l > 0 {
+		n += 1 + l + sovService(uint64(l))
+	}
+	return n
+}
+
+func (m *LogoutResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SessionId)
+	if l > 0 {
+		n += 1 + l + sovService(uint64(l))
+	}
+	return n
+}
+
+func (m *CheckSessionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SessionId)
+	if l > 0 {
+		n += 1 + l + sovService(uint64(l))
+	}
+	return n
+}
+
+func (m *CheckSessionResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.SessionId)
+	if l > 0 {
+		n += 1 + l + sovService(uint64(l))
+	}
+	if m.IsValid {
+		n += 2
+	}
+	if m.ExpiresAt != 0 {
+		n += 1 + sovService(uint64(m.ExpiresAt))
+	}
+	return n
+}
+
 func (m *QueryRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
+	l = len(m.SessionId)
+	if l > 0 {
+		n += 1 + l + sovService(uint64(l))
+	}
 	l = len(m.StartDate)
 	if l > 0 {
 		n += 1 + l + sovService(uint64(l))
@@ -589,6 +1236,27 @@ func (m *QueryResponse) Size() (n int) {
 	l = len(m.QueryResults)
 	if l > 0 {
 		n += 1 + l + sovService(uint64(l))
+	}
+	return n
+}
+
+func (m *PingRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *PingResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Status != 0 {
+		n += 1 + sovService(uint64(m.Status))
 	}
 	return n
 }
@@ -795,6 +1463,385 @@ func (m *LoginResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *LogoutRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowService
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: LogoutRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: LogoutRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SessionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowService
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthService
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthService
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SessionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipService(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *LogoutResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowService
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: LogoutResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: LogoutResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SessionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowService
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthService
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthService
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SessionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipService(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CheckSessionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowService
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CheckSessionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CheckSessionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SessionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowService
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthService
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthService
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SessionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipService(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CheckSessionResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowService
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CheckSessionResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CheckSessionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SessionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowService
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthService
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthService
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SessionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IsValid", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowService
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.IsValid = bool(v != 0)
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExpiresAt", wireType)
+			}
+			m.ExpiresAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowService
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExpiresAt |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipService(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *QueryRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -826,6 +1873,38 @@ func (m *QueryRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SessionId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowService
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthService
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthService
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SessionId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StartDate", wireType)
 			}
 			var stringLen uint64
@@ -856,7 +1935,7 @@ func (m *QueryRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.StartDate = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EndDate", wireType)
 			}
@@ -888,7 +1967,7 @@ func (m *QueryRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.EndDate = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Metrics", wireType)
 			}
@@ -920,7 +1999,7 @@ func (m *QueryRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.Metrics = append(m.Metrics, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
-		case 4:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Dimensions", wireType)
 			}
@@ -1037,6 +2116,131 @@ func (m *QueryResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.QueryResults = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipService(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PingRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowService
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PingRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PingRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipService(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthService
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PingResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowService
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PingResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PingResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			m.Status = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowService
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Status |= PingResponse_Status(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipService(dAtA[iNdEx:])

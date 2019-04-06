@@ -51,9 +51,23 @@ func MakeHTTPHandler(endpoints Endpoints) http.Handler {
 	}
 	m := mux.NewRouter()
 
-	m.Methods("POST").Path("/login").Handler(httptransport.NewServer(
+	m.Methods("POST").Path("/session/login").Handler(httptransport.NewServer(
 		endpoints.LoginEndpoint,
 		DecodeHTTPLoginZeroRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+
+	m.Methods("GET").Path("/session/logout/{session_id}").Handler(httptransport.NewServer(
+		endpoints.LogoutEndpoint,
+		DecodeHTTPLogoutZeroRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+
+	m.Methods("GET").Path("/session/check/{session_id}").Handler(httptransport.NewServer(
+		endpoints.CheckSessionEndpoint,
+		DecodeHTTPCheckSessionZeroRequest,
 		EncodeHTTPGenericResponse,
 		serverOptions...,
 	))
@@ -61,6 +75,13 @@ func MakeHTTPHandler(endpoints Endpoints) http.Handler {
 	m.Methods("POST").Path("/query-ga").Handler(httptransport.NewServer(
 		endpoints.QueryEndpoint,
 		DecodeHTTPQueryZeroRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+
+	m.Methods("GET").Path("/ping").Handler(httptransport.NewServer(
+		endpoints.PingEndpoint,
+		DecodeHTTPPingZeroRequest,
 		EncodeHTTPGenericResponse,
 		serverOptions...,
 	))
@@ -154,6 +175,76 @@ func DecodeHTTPLoginZeroRequest(_ context.Context, r *http.Request) (interface{}
 	return &req, err
 }
 
+// DecodeHTTPLogoutZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded logout request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPLogoutZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.LogoutRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = json.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{fmt.Errorf("request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	SessionIdLogoutStr := pathParams["session_id"]
+	SessionIdLogout := SessionIdLogoutStr
+	req.SessionId = SessionIdLogout
+
+	return &req, err
+}
+
+// DecodeHTTPCheckSessionZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded checksession request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPCheckSessionZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.CheckSessionRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = json.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{fmt.Errorf("request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	SessionIdCheckSessionStr := pathParams["session_id"]
+	SessionIdCheckSession := SessionIdCheckSessionStr
+	req.SessionId = SessionIdCheckSession
+
+	return &req, err
+}
+
 // DecodeHTTPQueryZeroRequest is a transport/http.DecodeRequestFunc that
 // decodes a JSON-encoded query request from the HTTP request
 // body. Primarily useful in a server.
@@ -181,6 +272,12 @@ func DecodeHTTPQueryZeroRequest(_ context.Context, r *http.Request) (interface{}
 
 	queryParams := r.URL.Query()
 	_ = queryParams
+
+	if SessionIdQueryStrArr, ok := queryParams["session_id"]; ok {
+		SessionIdQueryStr := SessionIdQueryStrArr[0]
+		SessionIdQuery := SessionIdQueryStr
+		req.SessionId = SessionIdQuery
+	}
 
 	if StartDateQueryStrArr, ok := queryParams["start_date"]; ok {
 		StartDateQueryStr := StartDateQueryStrArr[0]
@@ -223,6 +320,37 @@ func DecodeHTTPQueryZeroRequest(_ context.Context, r *http.Request) (interface{}
 		}
 		req.Dimensions = DimensionsQuery
 	}
+
+	return &req, err
+}
+
+// DecodeHTTPPingZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded ping request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPPingZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req pb.PingRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		if err = json.Unmarshal(buf, &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{fmt.Errorf("request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
 
 	return &req, err
 }

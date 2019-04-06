@@ -73,16 +73,25 @@ func submain() int {
 	// the cli binary and the the client packages: the -transport.addr flags
 	// and various client constructors both expect host:port strings.
 
+	fsCheckSession := flag.NewFlagSet("checksession", flag.ExitOnError)
+
 	fsLogin := flag.NewFlagSet("login", flag.ExitOnError)
+
+	fsLogout := flag.NewFlagSet("logout", flag.ExitOnError)
+
+	fsPing := flag.NewFlagSet("ping", flag.ExitOnError)
 
 	fsQuery := flag.NewFlagSet("query", flag.ExitOnError)
 
 	var (
-		flagIdentityLogin   = fsLogin.String("identity", "", "")
-		flagStartDateQuery  = fsQuery.String("startdate", "", "")
-		flagEndDateQuery    = fsQuery.String("enddate", "", "")
-		flagMetricsQuery    = fsQuery.String("metrics", "", "")
-		flagDimensionsQuery = fsQuery.String("dimensions", "", "")
+		flagSessionIdQuery        = fsQuery.String("sessionid", "", "")
+		flagStartDateQuery        = fsQuery.String("startdate", "", "")
+		flagEndDateQuery          = fsQuery.String("enddate", "", "")
+		flagMetricsQuery          = fsQuery.String("metrics", "", "")
+		flagDimensionsQuery       = fsQuery.String("dimensions", "", "")
+		flagIdentityLogin         = fsLogin.String("identity", "", "")
+		flagSessionIdLogout       = fsLogout.String("sessionid", "", "")
+		flagSessionIdCheckSession = fsCheckSession.String("sessionid", "", "")
 	)
 
 	flag.Usage = func() {
@@ -90,7 +99,10 @@ func submain() int {
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\n")
 		fmt.Fprintf(os.Stderr, "Subcommands:\n")
+		fmt.Fprintf(os.Stderr, "  %s\n", "checksession")
 		fmt.Fprintf(os.Stderr, "  %s\n", "login")
+		fmt.Fprintf(os.Stderr, "  %s\n", "logout")
+		fmt.Fprintf(os.Stderr, "  %s\n", "ping")
 		fmt.Fprintf(os.Stderr, "  %s\n", "query")
 	}
 	if len(os.Args) < 2 {
@@ -137,6 +149,27 @@ func submain() int {
 
 	switch flag.Args()[0] {
 
+	case "checksession":
+		fsCheckSession.Parse(flag.Args()[1:])
+
+		SessionIdCheckSession := *flagSessionIdCheckSession
+
+		request, err := handlers.CheckSession(SessionIdCheckSession)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error calling handlers.CheckSession: %v\n", err)
+			return 1
+		}
+
+		v, err := service.CheckSession(ctx, request)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error calling service.CheckSession: %v\n", err)
+			return 1
+		}
+		fmt.Println("Client Requested with:")
+		fmt.Println(SessionIdCheckSession)
+		fmt.Println("Server Responded with:")
+		fmt.Println(v)
+
 	case "login":
 		fsLogin.Parse(flag.Args()[1:])
 
@@ -158,9 +191,50 @@ func submain() int {
 		fmt.Println("Server Responded with:")
 		fmt.Println(v)
 
+	case "logout":
+		fsLogout.Parse(flag.Args()[1:])
+
+		SessionIdLogout := *flagSessionIdLogout
+
+		request, err := handlers.Logout(SessionIdLogout)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error calling handlers.Logout: %v\n", err)
+			return 1
+		}
+
+		v, err := service.Logout(ctx, request)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error calling service.Logout: %v\n", err)
+			return 1
+		}
+		fmt.Println("Client Requested with:")
+		fmt.Println(SessionIdLogout)
+		fmt.Println("Server Responded with:")
+		fmt.Println(v)
+
+	case "ping":
+		fsPing.Parse(flag.Args()[1:])
+
+		request, err := handlers.Ping()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error calling handlers.Ping: %v\n", err)
+			return 1
+		}
+
+		v, err := service.Ping(ctx, request)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error calling service.Ping: %v\n", err)
+			return 1
+		}
+		fmt.Println("Client Requested with:")
+		fmt.Println()
+		fmt.Println("Server Responded with:")
+		fmt.Println(v)
+
 	case "query":
 		fsQuery.Parse(flag.Args()[1:])
 
+		SessionIdQuery := *flagSessionIdQuery
 		StartDateQuery := *flagStartDateQuery
 		EndDateQuery := *flagEndDateQuery
 
@@ -180,7 +254,7 @@ func submain() int {
 			}
 		}
 
-		request, err := handlers.Query(StartDateQuery, EndDateQuery, MetricsQuery, DimensionsQuery)
+		request, err := handlers.Query(SessionIdQuery, StartDateQuery, EndDateQuery, MetricsQuery, DimensionsQuery)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error calling handlers.Query: %v\n", err)
 			return 1
@@ -192,7 +266,7 @@ func submain() int {
 			return 1
 		}
 		fmt.Println("Client Requested with:")
-		fmt.Println(StartDateQuery, EndDateQuery, MetricsQuery, DimensionsQuery)
+		fmt.Println(SessionIdQuery, StartDateQuery, EndDateQuery, MetricsQuery, DimensionsQuery)
 		fmt.Println("Server Responded with:")
 		fmt.Println(v)
 

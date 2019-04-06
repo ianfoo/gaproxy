@@ -33,8 +33,11 @@ import (
 // single type that implements the Service interface. For example, you might
 // construct individual endpoints using transport/http.NewClient, combine them into an Endpoints, and return it to the caller as a Service.
 type Endpoints struct {
-	LoginEndpoint endpoint.Endpoint
-	QueryEndpoint endpoint.Endpoint
+	LoginEndpoint        endpoint.Endpoint
+	LogoutEndpoint       endpoint.Endpoint
+	CheckSessionEndpoint endpoint.Endpoint
+	QueryEndpoint        endpoint.Endpoint
+	PingEndpoint         endpoint.Endpoint
 }
 
 // Endpoints
@@ -47,6 +50,22 @@ func (e Endpoints) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginRes
 	return response.(*pb.LoginResponse), nil
 }
 
+func (e Endpoints) Logout(ctx context.Context, in *pb.LogoutRequest) (*pb.LogoutResponse, error) {
+	response, err := e.LogoutEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.LogoutResponse), nil
+}
+
+func (e Endpoints) CheckSession(ctx context.Context, in *pb.CheckSessionRequest) (*pb.CheckSessionResponse, error) {
+	response, err := e.CheckSessionEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.CheckSessionResponse), nil
+}
+
 func (e Endpoints) Query(ctx context.Context, in *pb.QueryRequest) (*pb.QueryResponse, error) {
 	response, err := e.QueryEndpoint(ctx, in)
 	if err != nil {
@@ -55,12 +74,42 @@ func (e Endpoints) Query(ctx context.Context, in *pb.QueryRequest) (*pb.QueryRes
 	return response.(*pb.QueryResponse), nil
 }
 
+func (e Endpoints) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingResponse, error) {
+	response, err := e.PingEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.PingResponse), nil
+}
+
 // Make Endpoints
 
 func MakeLoginEndpoint(s pb.GAProxyServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*pb.LoginRequest)
 		v, err := s.Login(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeLogoutEndpoint(s pb.GAProxyServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.LogoutRequest)
+		v, err := s.Logout(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
+func MakeCheckSessionEndpoint(s pb.GAProxyServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.CheckSessionRequest)
+		v, err := s.CheckSession(ctx, req)
 		if err != nil {
 			return nil, err
 		}
@@ -79,6 +128,17 @@ func MakeQueryEndpoint(s pb.GAProxyServer) endpoint.Endpoint {
 	}
 }
 
+func MakePingEndpoint(s pb.GAProxyServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.PingRequest)
+		v, err := s.Ping(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
 // WrapAllExcept wraps each Endpoint field of struct Endpoints with a
 // go-kit/kit/endpoint.Middleware.
 // Use this for applying a set of middlewares to every endpoint in the service.
@@ -86,8 +146,11 @@ func MakeQueryEndpoint(s pb.GAProxyServer) endpoint.Endpoint {
 // WrapAllExcept(middleware, "Status", "Ping")
 func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...string) {
 	included := map[string]struct{}{
-		"Login": struct{}{},
-		"Query": struct{}{},
+		"Login":        struct{}{},
+		"Logout":       struct{}{},
+		"CheckSession": struct{}{},
+		"Query":        struct{}{},
+		"Ping":         struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -101,8 +164,17 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		if inc == "Login" {
 			e.LoginEndpoint = middleware(e.LoginEndpoint)
 		}
+		if inc == "Logout" {
+			e.LogoutEndpoint = middleware(e.LogoutEndpoint)
+		}
+		if inc == "CheckSession" {
+			e.CheckSessionEndpoint = middleware(e.CheckSessionEndpoint)
+		}
 		if inc == "Query" {
 			e.QueryEndpoint = middleware(e.QueryEndpoint)
+		}
+		if inc == "Ping" {
+			e.PingEndpoint = middleware(e.PingEndpoint)
 		}
 	}
 }
@@ -118,8 +190,11 @@ type LabeledMiddleware func(string, endpoint.Endpoint) endpoint.Endpoint
 // functionality.
 func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoint) endpoint.Endpoint, excluded ...string) {
 	included := map[string]struct{}{
-		"Login": struct{}{},
-		"Query": struct{}{},
+		"Login":        struct{}{},
+		"Logout":       struct{}{},
+		"CheckSession": struct{}{},
+		"Query":        struct{}{},
+		"Ping":         struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -133,8 +208,17 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		if inc == "Login" {
 			e.LoginEndpoint = middleware("Login", e.LoginEndpoint)
 		}
+		if inc == "Logout" {
+			e.LogoutEndpoint = middleware("Logout", e.LogoutEndpoint)
+		}
+		if inc == "CheckSession" {
+			e.CheckSessionEndpoint = middleware("CheckSession", e.CheckSessionEndpoint)
+		}
 		if inc == "Query" {
 			e.QueryEndpoint = middleware("Query", e.QueryEndpoint)
+		}
+		if inc == "Ping" {
+			e.PingEndpoint = middleware("Ping", e.PingEndpoint)
 		}
 	}
 }

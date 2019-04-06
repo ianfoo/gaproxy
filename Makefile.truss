@@ -1,0 +1,12 @@
+TRUSS := github.com/metaverse/truss
+TRUSS_REPO ?= https://$(TRUSS).git
+TRUSS_INSTALL_DIR ?= $(GOPATH)/src/$(TRUSS)
+
+truss-install: $(TRUSS_INSTALL_DIR)
+	cd $(TRUSS_INSTALL_DIR) && GO111MODULE=on make dependencies truss
+
+$(TRUSS_INSTALL_DIR):
+	if [[ ! -d $(TRUSS_INSTALL_DIR) ]]; then \
+		mkdir -p $(TRUSS_INSTALL_DIR); \
+		git clone $(TRUSS_REPO) $(TRUSS_INSTALL_DIR); \
+	fi

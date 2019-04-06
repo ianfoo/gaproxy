@@ -38,13 +38,19 @@ func NewEndpoints() svc.Endpoints {
 
 	// Endpoint domain.
 	var (
-		loginEndpoint = svc.MakeLoginEndpoint(service)
-		queryEndpoint = svc.MakeQueryEndpoint(service)
+		loginEndpoint        = svc.MakeLoginEndpoint(service)
+		logoutEndpoint       = svc.MakeLogoutEndpoint(service)
+		checksessionEndpoint = svc.MakeCheckSessionEndpoint(service)
+		queryEndpoint        = svc.MakeQueryEndpoint(service)
+		pingEndpoint         = svc.MakePingEndpoint(service)
 	)
 
 	endpoints := svc.Endpoints{
-		LoginEndpoint: loginEndpoint,
-		QueryEndpoint: queryEndpoint,
+		LoginEndpoint:        loginEndpoint,
+		LogoutEndpoint:       logoutEndpoint,
+		CheckSessionEndpoint: checksessionEndpoint,
+		QueryEndpoint:        queryEndpoint,
+		PingEndpoint:         pingEndpoint,
 	}
 
 	// Wrap selected Endpoints with middlewares. See handlers/middlewares.go

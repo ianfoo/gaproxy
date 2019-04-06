@@ -17,13 +17,36 @@ func Login(IdentityLogin string) (*pb.LoginRequest, error) {
 	return &request, nil
 }
 
+// Logout implements Service.
+func Logout(SessionIdLogout string) (*pb.LogoutRequest, error) {
+	request := pb.LogoutRequest{
+		SessionId: SessionIdLogout,
+	}
+	return &request, nil
+}
+
+// CheckSession implements Service.
+func CheckSession(SessionIdCheckSession string) (*pb.CheckSessionRequest, error) {
+	request := pb.CheckSessionRequest{
+		SessionId: SessionIdCheckSession,
+	}
+	return &request, nil
+}
+
 // Query implements Service.
-func Query(StartDateQuery string, EndDateQuery string, MetricsQuery []string, DimensionsQuery []string) (*pb.QueryRequest, error) {
+func Query(SessionIdQuery string, StartDateQuery string, EndDateQuery string, MetricsQuery []string, DimensionsQuery []string) (*pb.QueryRequest, error) {
 	request := pb.QueryRequest{
+		SessionId:  SessionIdQuery,
 		StartDate:  StartDateQuery,
 		EndDate:    EndDateQuery,
 		Metrics:    MetricsQuery,
 		Dimensions: DimensionsQuery,
 	}
+	return &request, nil
+}
+
+// Ping implements Service.
+func Ping() (*pb.PingRequest, error) {
+	request := pb.PingRequest{}
 	return &request, nil
 }

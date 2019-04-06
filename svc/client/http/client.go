@@ -64,9 +64,29 @@ func New(instance string, options ...ClientOption) (pb.GAProxyServer, error) {
 	{
 		LoginZeroEndpoint = httptransport.NewClient(
 			"POST",
-			copyURL(u, "/login"),
+			copyURL(u, "/session/login"),
 			EncodeHTTPLoginZeroRequest,
 			DecodeHTTPLoginResponse,
+			clientOptions...,
+		).Endpoint()
+	}
+	var LogoutZeroEndpoint endpoint.Endpoint
+	{
+		LogoutZeroEndpoint = httptransport.NewClient(
+			"GET",
+			copyURL(u, "/session/logout/"),
+			EncodeHTTPLogoutZeroRequest,
+			DecodeHTTPLogoutResponse,
+			clientOptions...,
+		).Endpoint()
+	}
+	var CheckSessionZeroEndpoint endpoint.Endpoint
+	{
+		CheckSessionZeroEndpoint = httptransport.NewClient(
+			"GET",
+			copyURL(u, "/session/check/"),
+			EncodeHTTPCheckSessionZeroRequest,
+			DecodeHTTPCheckSessionResponse,
 			clientOptions...,
 		).Endpoint()
 	}
@@ -80,10 +100,23 @@ func New(instance string, options ...ClientOption) (pb.GAProxyServer, error) {
 			clientOptions...,
 		).Endpoint()
 	}
+	var PingZeroEndpoint endpoint.Endpoint
+	{
+		PingZeroEndpoint = httptransport.NewClient(
+			"GET",
+			copyURL(u, "/ping"),
+			EncodeHTTPPingZeroRequest,
+			DecodeHTTPPingResponse,
+			clientOptions...,
+		).Endpoint()
+	}
 
 	return svc.Endpoints{
-		LoginEndpoint: LoginZeroEndpoint,
-		QueryEndpoint: QueryZeroEndpoint,
+		LoginEndpoint:        LoginZeroEndpoint,
+		LogoutEndpoint:       LogoutZeroEndpoint,
+		CheckSessionEndpoint: CheckSessionZeroEndpoint,
+		QueryEndpoint:        QueryZeroEndpoint,
+		PingEndpoint:         PingZeroEndpoint,
 	}, nil
 }
 
@@ -152,6 +185,60 @@ func DecodeHTTPLoginResponse(_ context.Context, r *http.Response) (interface{}, 
 	return &resp, nil
 }
 
+// DecodeHTTPLogoutResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded LogoutResponse response from the HTTP response body.
+// If the response has a non-200 status code, we will interpret that as an
+// error and attempt to decode the specific error message from the response
+// body. Primarily useful in a client.
+func DecodeHTTPLogoutResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read http body")
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("response http body empty")
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
+	}
+
+	var resp pb.LogoutResponse
+	if err = json.Unmarshal(buf, &resp); err != nil {
+		return nil, errorDecoder(buf)
+	}
+
+	return &resp, nil
+}
+
+// DecodeHTTPCheckSessionResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded CheckSessionResponse response from the HTTP response body.
+// If the response has a non-200 status code, we will interpret that as an
+// error and attempt to decode the specific error message from the response
+// body. Primarily useful in a client.
+func DecodeHTTPCheckSessionResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read http body")
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("response http body empty")
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
+	}
+
+	var resp pb.CheckSessionResponse
+	if err = json.Unmarshal(buf, &resp); err != nil {
+		return nil, errorDecoder(buf)
+	}
+
+	return &resp, nil
+}
+
 // DecodeHTTPQueryResponse is a transport/http.DecodeResponseFunc that decodes
 // a JSON-encoded QueryResponse response from the HTTP response body.
 // If the response has a non-200 status code, we will interpret that as an
@@ -179,6 +266,33 @@ func DecodeHTTPQueryResponse(_ context.Context, r *http.Response) (interface{}, 
 	return &resp, nil
 }
 
+// DecodeHTTPPingResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded PingResponse response from the HTTP response body.
+// If the response has a non-200 status code, we will interpret that as an
+// error and attempt to decode the specific error message from the response
+// body. Primarily useful in a client.
+func DecodeHTTPPingResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read http body")
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("response http body empty")
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
+	}
+
+	var resp pb.PingResponse
+	if err = json.Unmarshal(buf, &resp); err != nil {
+		return nil, errorDecoder(buf)
+	}
+
+	return &resp, nil
+}
+
 // HTTP Client Encode
 
 // EncodeHTTPLoginZeroRequest is a transport/http.EncodeRequestFunc
@@ -196,6 +310,7 @@ func EncodeHTTPLoginZeroRequest(_ context.Context, r *http.Request, request inte
 	// Set the path parameters
 	path := strings.Join([]string{
 		"",
+		"session",
 		"login",
 	}, "/")
 	u, err := url.Parse(path)
@@ -217,6 +332,96 @@ func EncodeHTTPLoginZeroRequest(_ context.Context, r *http.Request, request inte
 	// Set the body parameters
 	var buf bytes.Buffer
 	toRet := request.(*pb.LoginRequest)
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPLogoutZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a logout request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPLogoutZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.LogoutRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"session",
+		"logout",
+		fmt.Sprint(req.SessionId),
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	r.URL.RawQuery = values.Encode()
+
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.LogoutRequest)
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPCheckSessionZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a checksession request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPCheckSessionZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.CheckSessionRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"session",
+		"check",
+		fmt.Sprint(req.SessionId),
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	r.URL.RawQuery = values.Encode()
+
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.CheckSessionRequest)
 	encoder := json.NewEncoder(&buf)
 	encoder.SetEscapeHTML(false)
 	if err := encoder.Encode(toRet); err != nil {
@@ -255,6 +460,8 @@ func EncodeHTTPQueryZeroRequest(_ context.Context, r *http.Request, request inte
 	var tmp []byte
 	_ = tmp
 
+	values.Add("session_id", fmt.Sprint(req.SessionId))
+
 	values.Add("start_date", fmt.Sprint(req.StartDate))
 
 	values.Add("end_date", fmt.Sprint(req.EndDate))
@@ -278,6 +485,49 @@ func EncodeHTTPQueryZeroRequest(_ context.Context, r *http.Request, request inte
 	// Set the body parameters
 	var buf bytes.Buffer
 	toRet := request.(*pb.QueryRequest)
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPPingZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a ping request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPPingZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.PingRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"ping",
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	r.URL.RawQuery = values.Encode()
+
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.PingRequest)
 	encoder := json.NewEncoder(&buf)
 	encoder.SetEscapeHTML(false)
 	if err := encoder.Encode(toRet); err != nil {
