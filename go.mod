@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/mux v1.7.1
 	github.com/matryer/is v1.2.0
 	github.com/metaverse/truss v0.1.0
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.4.1
-	google.golang.org/grpc v1.19.1
+	google.golang.org/grpc v1.53.0
 )
